@@ -1,0 +1,66 @@
+\documentclass[a4paper]{article}
+
+\usepackage{multido}
+\usepackage{pst-all} % pst-tree, pst-node}
+
+\begin{document}
+
+% Radius \R of the circle
+\def\R{10}
+
+% \r is used for dimensioning the pstricks environment
+\pstFPdiv{\r}{\R}{2}
+\pstFPstripZeros{\r}{\r}
+
+% Number of roots \N of the unity
+\def\N{720}
+
+% Number used in multiplication
+\def\NC{13}
+
+% Calculate the angle increments
+% dividing 360 degrees by \n
+\pstFPdiv{\AI}{360}{\N}
+
+% The calculations are permormed
+% in greater precision that pstricks
+% is able to deal, hence we strip
+% the zeros at right
+\pstFPstripZeros{\AI}{\AI}
+
+\begin{figure}[b]
+\centering
+\begin{pspicture}(-\r,-\r)(\r,\r)
+
+% Draws a circle of radius \R
+% and centered in (0,0)
+\pscircle(0,0){\R}
+
+% Calculate the angle of this point and save in \AP
+\pstFPmul{\AP}{\i}{\AI}
+\pstFPstripZeros{\AP}{\AP}
+
+\multido{\i=1+1}{\N}{
+% For each point
+\pstFPmul{\AP}{\i}{\AI}
+% Strip zeros from \AP
+\pstFPstripZeros{\AP}{\AP}
+% Create a point A. The trick is to create this point
+% at coordinates (\R,0) inside the \psrotate command
+% for displaying it where we want it to be.
+\psrotate(0,0){\AP}{\pnode[\R,0]{A}}
+% Here we implement our rule for joining the points
+% by a straight line.
+\pstFPmul{\BA}{\NC}{\AP}
+% Strip zeros from \BA
+\pstFPstripZeros{\BA}{\BA}
+% Also rotate the \pnode by \BA degrees.
+\psrotate(0,0){\BA}{\pnode[\R,0]{B}}
+% Finally, joing the nodes A and B
+\ncline{A}{B}
+} % End Multido
+
+\end{pspicture}
+\end{figure}
+
+\end{document}
